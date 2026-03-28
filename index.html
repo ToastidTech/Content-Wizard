@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Content OS">
+  <meta name="theme-color" content="#07090f">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toastid Tech — Zero-Cost Content System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #07090f;
+    --card: #0d1120;
+    --border: #1a2035;
+    --gold: #c9a84c;
+    --teal: #5ccfcf;
+    --dim: #4a5068;
+    --text: #ccd0e0;
+    --white: #fff;
+    --green: #3aaa7a;
+    --red: #dc5050;
+    --purple: #9b59b6;
+  }
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: 2px;
+  }
+  .logo span { color: var(--gold); }
+  .header-badge {
+    background: rgba(92,207,207,0.1);
+    border: 1px solid rgba(92,207,207,0.25);
+    color: var(--teal);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .savings-badge {
+    background: rgba(58,170,122,0.12);
+    border: 1px solid rgba(58,170,122,0.3);
+    color: var(--green);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    position: relative;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(26,32,53,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,32,53,0.3) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: 2px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .hero-title span { color: var(--gold); }
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--dim);
+    max-width: 560px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .savings-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .saving-pill {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+  .saving-pill strong { color: var(--green); }
+  .saving-pill s { color: var(--dim); font-size: 0.72rem; }
+
+  /* ── NAV TABS ── */
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 0;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 14px 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── CONTENT PANELS ── */
+  .panel { display: none; padding: 32px 28px; max-width: 1100px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  /* Section headers */
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    font-size: 0.83rem;
+    color: var(--dim);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  /* Tool cards grid */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .tool-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-card:hover {
+    border-color: rgba(201,168,76,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .tool-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .tool-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 2px;
+  }
+  .tool-url {
+    font-size: 0.68rem;
+    color: var(--teal);
+    letter-spacing: 0.5px;
+  }
+  .tool-desc {
+    font-size: 0.8rem;
+    color: var(--dim);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .tool-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .tag {
+    font-size: 0.62rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .tag-free { background: rgba(58,170,122,0.12); color: var(--green); border: 1px solid rgba(58,170,122,0.2); }
+  .tag-ai { background: rgba(92,207,207,0.1); color: var(--teal); border: 1px solid rgba(92,207,207,0.2); }
+  .tag-write { background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); }
+  .tag-visual { background: rgba(155,89,182,0.12); color: #c39bd3; border: 1px solid rgba(155,89,182,0.2); }
+  .tag-video { background: rgba(220,80,80,0.1); color: #e87070; border: 1px solid rgba(220,80,80,0.2); }
+  .tag-schedule { background: rgba(52,152,219,0.1); color: #7ec8e3; border: 1px solid rgba(52,152,219,0.2); }
+  .tag-email { background: rgba(230,126,34,0.1); color: #f0a868; border: 1px solid rgba(230,126,34,0.2); }
+  .tool-replaces {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+  }
+  .replaces-label { color: var(--dim); }
+  .replaces-val { color: var(--red); text-decoration: line-through; }
+  .replaces-save { color: var(--green); font-weight: 700; margin-left: auto; }
+
+  /* Workflow steps */
+  .workflow {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .workflow-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .workflow-step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 3px;
+  }
+  .step-desc {
+    font-size: 0.78rem;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+  .step-tool {
+    display: inline-block;
+    background: rgba(92,207,207,0.08);
+    border: 1px solid rgba(92,207,207,0.2);
+    color: var(--teal);
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Calendar */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .cal-header {
+    text-align: center;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    color: var(--dim);
+    text-transform: uppercase;
+    padding: 6px 0;
+    font-weight: 700;
+  }
+  .cal-day {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    min-height: 90px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cal-day:hover { border-color: rgba(201,168,76,0.3); }
+  .cal-day-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .cal-post {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-bottom: 3px;
+    line-height: 1.3;
+    cursor: pointer;
+  }
+  .cal-post.tiktok { background: rgba(255,45,85,0.15); color: #ff6b8a; border-left: 2px solid #ff2d55; }
+  .cal-post.instagram { background: rgba(225,48,108,0.12); color: #e87099; border-left: 2px solid #e1306c; }
+  .cal-post.linkedin { background: rgba(10,102,194,0.15); color: #7eb8f0; border-left: 2px solid #0a66c2; }
+  .cal-post.facebook { background: rgba(24,119,242,0.12); color: #7eb3f5; border-left: 2px solid #1877f2; }
+  .cal-post.email { background: rgba(201,168,76,0.12); color: var(--gold); border-left: 2px solid var(--gold); }
+
+  /* Prompt library */
+  .prompt-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .prompt-card:hover { border-color: rgba(201,168,76,0.3); }
+  .prompt-platform {
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .prompt-text {
+    font-size: 0.83rem;
+    color: var(--text);
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .prompt-copy {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Exo 2', sans-serif;
+    transition: all 0.2s;
+  }
+  .prompt-copy:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* Savings tracker */
+  .savings-total {
+    background: linear-gradient(135deg, rgba(58,170,122,0.1), rgba(92,207,207,0.05));
+    border: 1px solid rgba(58,170,122,0.25);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .savings-amount {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--green);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .savings-label { font-size: 0.8rem; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+  }
+  .compare-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table td {
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    border-bottom: 1px solid rgba(26,32,53,0.5);
+    vertical-align: middle;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.01); }
+  .paid-tool { color: var(--red); text-decoration: line-through; }
+  .free-tool { color: var(--teal); }
+  .save-amt { color: var(--green); font-weight: 700; }
+
+  @media (max-width: 600px) {
+    .panel { padding: 20px 16px; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .calendar-grid { grid-template-columns: repeat(4, 1fr); }
+    .cal-day { min-height: 70px; }
+  }
+
+  /* ── SPLASH SCREEN ── */
+  #splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #07090f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: opacity 0.6s ease;
+  }
+  #splash-screen.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Space background */
+  .splash-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 30%, rgba(30,80,255,0.18) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 80% 70%, rgba(92,207,207,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 30% at 20% 80%, rgba(100,50,255,0.1) 0%, transparent 55%),
+      linear-gradient(175deg, #07090f 0%, #0a0c1a 50%, #07090f 100%);
+    animation: splashPulse 4s ease-in-out infinite alternate;
+  }
+  @keyframes splashPulse { from { opacity:0.8; } to { opacity:1; } }
+
+  /* Star particles */
+  .splash-stars {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle linear infinite;
+  }
+
+  @keyframes twinkle {
+    0%,100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Grid overlay */
+  .splash-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(30,80,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,80,255,0.04) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* Main content */
+  .splash-content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Icon */
+  .splash-icon {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+    border-radius: 32px;
+    filter:
+      drop-shadow(0 0 30px rgba(80,120,255,0.7))
+      drop-shadow(0 0 60px rgba(40,80,220,0.4));
+    animation: iconEntry 0.7s cubic-bezier(0.22,1,0.36,1) both,
+               iconGlow 3s 1s ease-in-out infinite alternate;
+    margin-bottom: 28px;
+  }
+  @keyframes iconEntry {
+    from { opacity:0; transform: scale(0.6) translateY(-20px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+  }
+  @keyframes iconGlow {
+    from { filter: drop-shadow(0 0 24px rgba(80,120,255,0.6)) drop-shadow(0 0 50px rgba(40,80,220,0.3)); }
+    to   { filter: drop-shadow(0 0 40px rgba(100,160,255,0.9)) drop-shadow(0 0 80px rgba(60,100,255,0.5)); }
+  }
+
+  /* App name */
+  .splash-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 4px;
+    text-align: center;
+    line-height: 1.1;
+    text-shadow: 0 0 30px rgba(80,140,255,0.5);
+    animation: fadeUp 0.6s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .splash-title span { color: #c9a84c; }
+
+  .splash-sub {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+    color: rgba(92,207,207,0.7);
+    text-transform: uppercase;
+    margin-top: 10px;
+    animation: fadeUp 0.6s 0.45s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  /* Divider */
+  .splash-divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.6), transparent);
+    margin: 22px 0;
+    animation: expandLine 0.8s 0.5s ease both;
+    transform-origin: center;
+  }
+  @keyframes expandLine {
+    from { transform: scaleX(0); opacity:0; }
+    to   { transform: scaleX(1); opacity:1; }
+  }
+
+  /* Features */
+  .splash-features {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+  .splash-feat {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .splash-feat span { color: #5ccfcf; font-size: 0.9rem; }
+
+  /* Loader */
+  .splash-loader {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeUp 0.5s 0.8s ease both;
+  }
+  .splash-track {
+    width: 160px;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .splash-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3060ff, #5ccfcf, #c9a84c);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(92,207,207,0.6);
+    animation: splashLoad 2.2s 1s ease-in-out forwards;
+  }
+  @keyframes splashLoad {
+    0%   { width: 0%; }
+    60%  { width: 70%; }
+    100% { width: 100%; }
+  }
+  .splash-loader-txt {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    color: rgba(92,207,207,0.35);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* Toastid badge bottom */
+  .splash-powered {
+    position: absolute;
+    bottom: 28px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.15);
+    z-index: 5;
+    animation: fadeUp 0.5s 0.9s ease both;
+  }
+  .splash-powered span { color: rgba(201,168,76,0.4); }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(14px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+
+<div id="splash-screen">
+  <div class="splash-bg"></div>
+  <div class="splash-grid"></div>
+  <div class="splash-stars" id="splashStars"></div>
+
+  <div class="splash-content">
+    <img class="splash-icon" src="icon-512.png" alt="Content Wizard" />
+    <div class="splash-title">CONTENT<span>.</span>OS</div>
+    <div class="splash-sub">By Toastid Tech</div>
+    <div class="splash-divider"></div>
+    <div class="splash-features">
+      <div class="splash-feat"><span>✦</span> Zero-cost content stack</div>
+      <div class="splash-feat"><span>✦</span> AI writing, visuals & video</div>
+      <div class="splash-feat"><span>✦</span> Schedule across all platforms</div>
+    </div>
+  </div>
+
+  <div class="splash-loader">
+    <div class="splash-track"><div class="splash-bar"></div></div>
+    <div class="splash-loader-txt">Loading</div>
+  </div>
+
+  <div class="splash-powered">TOASTID<span>.</span>TECH</div>
+</div>
+
+<div class="header">
+  <div class="logo">TOASTID<span>.</span>AI</div>
+  <div class="header-badge">Content OS</div>
+  <div class="savings-badge">💰 $847/mo saved</div>
+</div>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-title">Zero-Cost<br><span>Content Production System</span></div>
+    <div class="hero-sub">Cancel every paid tool. Replace your entire content stack with free AI. Writing, visuals, video, email, and scheduling — all covered.</div>
+    <div class="savings-row">
+      <div class="saving-pill">✍️ Writing <strong>FREE</strong> <s>Jasper $49/mo</s></div>
+      <div class="saving-pill">🎨 Visuals <strong>FREE</strong> <s>Canva Pro $13/mo</s></div>
+      <div class="saving-pill">🎬 Video <strong>FREE</strong> <s>CapCut Pro $8/mo</s></div>
+      <div class="saving-pill">📧 Email <strong>FREE</strong> <s>Mailchimp $20/mo</s></div>
+      <div class="saving-pill">📅 Schedule <strong>FREE</strong> <s>Buffer $15/mo</s></div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPanel('tools')">🛠 Tools</div>
+  <div class="tab" onclick="showPanel('workflow')">⚡ Workflow</div>
+  <div class="tab" onclick="showPanel('calendar')">📅 Calendar</div>
+  <div class="tab" onclick="showPanel('prompts')">💬 Prompts</div>
+  <div class="tab" onclick="showPanel('savings')">💰 Savings</div>
+</div>
+
+<!-- ── TOOLS PANEL ── -->
+<div class="panel active" id="panel-tools">
+  <div class="section-title">Your Free Tool Stack</div>
+  <div class="section-sub">Every tool below is 100% free. No credit card. No trial. No catch.</div>
+
+  <div class="tools-grid">
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🤖</div>
+        <div><div class="tool-name">Claude.ai</div><div class="tool-url">claude.ai</div></div>
+      </div>
+      <div class="tool-desc">Your primary AI writer. Scripts, captions, emails, blogs, ad copy — all in your brand voice. Free tier = unlimited for casual use.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-ai">AI</span>
+        <span class="tag tag-write">Writing</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Jasper, Copy.ai, Writesonic</span>
+        <span class="replaces-save">$49–99/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🎨</div>
+        <div><div class="tool-name">Canva Free</div><div class="tool-url">canva.com</div></div>
+      </div>
+      <div class="tool-desc">Design thumbnails, social graphics, email headers, and TikTok covers. Free tier has 250,000+ templates. Use Magic Write for AI copy inside designs.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-visual">Visual</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Adobe Express, Canva Pro</span>
+        <span class="replaces-save">$13–55/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🎬</div>
+        <div><div class="tool-name">CapCut</div><div class="tool-url">capcut.com</div></div>
+      </div>
+      <div class="tool-desc">Free video editor built for TikTok. Auto-captions, templates, transitions, effects. Desktop + mobile. AI background removal and voice enhancement included free.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-video">Video</span>
+        <span class="tag tag-ai">AI</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Adobe Premiere, InVideo Pro</span>
+        <span class="replaces-save">$55–30/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🖼</div>
+        <div><div class="tool-name">Adobe Firefly</div><div class="tool-url">firefly.adobe.com</div></div>
+      </div>
+      <div class="tool-desc">Free AI image generation by Adobe. Commercially safe images for thumbnails, social posts, and ad visuals. 25 free credits/mo — use them wisely.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-visual">Visual</span>
+        <span class="tag tag-ai">AI</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Midjourney, DALL-E API</span>
+        <span class="replaces-save">$10–30/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🎙</div>
+        <div><div class="tool-name">ElevenLabs Free</div><div class="tool-url">elevenlabs.io</div></div>
+      </div>
+      <div class="tool-desc">AI voiceover for your TikTok and video content. Free tier = 10,000 characters/mo. Clone your own voice or pick from 100+ premium voices.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-video">Video</span>
+        <span class="tag tag-ai">AI</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Descript Voice, Murf.ai</span>
+        <span class="replaces-save">$19–29/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">📧</div>
+        <div><div class="tool-name">Brevo (ex-Sendinblue)</div><div class="tool-url">brevo.com</div></div>
+      </div>
+      <div class="tool-desc">Free email marketing platform. Send up to 300 emails/day free. Drag-and-drop builder, automation flows, and analytics. No credit card needed.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-email">Email</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Mailchimp, Klaviyo</span>
+        <span class="replaces-save">$20–45/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">📅</div>
+        <div><div class="tool-name">Meta Business Suite</div><div class="tool-url">business.facebook.com</div></div>
+      </div>
+      <div class="tool-desc">Free scheduling for Facebook and Instagram. Schedule posts weeks in advance, view insights, and manage comments — all from one dashboard.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-schedule">Schedule</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Buffer, Hootsuite, Sprout</span>
+        <span class="replaces-save">$15–249/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">💼</div>
+        <div><div class="tool-name">LinkedIn Native</div><div class="tool-url">linkedin.com</div></div>
+      </div>
+      <div class="tool-desc">Schedule LinkedIn posts up to 3 months in advance directly inside LinkedIn — no third party needed. Use Creator Mode for analytics and newsletter.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-schedule">Schedule</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Shield Analytics, Taplio</span>
+        <span class="replaces-save">$8–49/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🎵</div>
+        <div><div class="tool-name">TikTok Native + Studio</div><div class="tool-url">tiktok.com</div></div>
+      </div>
+      <div class="tool-desc">Schedule TikToks up to 10 days ahead via TikTok Studio. Built-in analytics, trending sounds library, and auto-caption generation — all free.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-schedule">Schedule</span>
+        <span class="tag tag-video">Video</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Later, Planoly</span>
+        <span class="replaces-save">$18–45/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🔊</div>
+        <div><div class="tool-name">Pixabay + Zapsplat</div><div class="tool-url">pixabay.com · zapsplat.com</div></div>
+      </div>
+      <div class="tool-desc">Royalty-free music, sound effects, and stock footage. Pixabay = free images + video + music. Zapsplat = 90,000+ free SFX. No attribution required.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-video">Video</span>
+        <span class="tag tag-visual">Visual</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">Epidemic Sound, Artlist</span>
+        <span class="replaces-save">$16–20/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">📊</div>
+        <div><div class="tool-name">Google Analytics + Search Console</div><div class="tool-url">analytics.google.com</div></div>
+      </div>
+      <div class="tool-desc">Track your content performance across platforms. Search Console shows what searches drive traffic. Both are completely free and enterprise-grade.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-schedule">Analytics</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">SEMrush, Ahrefs</span>
+        <span class="replaces-save">$99–199/mo</span>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">✉️</div>
+        <div><div class="tool-name">EmailJS</div><div class="tool-url">emailjs.com</div></div>
+      </div>
+      <div class="tool-desc">Send transactional and marketing emails directly from your apps with no backend. Free tier = 200 emails/mo. Already wired into your Tai Chi app.</div>
+      <div class="tool-tags">
+        <span class="tag tag-free">Free</span>
+        <span class="tag tag-email">Email</span>
+        <span class="tag tag-ai">Dev</span>
+      </div>
+      <div class="tool-replaces">
+        <span class="replaces-label">Replaces:</span>
+        <span class="replaces-val">SendGrid paid, Postmark</span>
+        <span class="replaces-save">$15–25/mo</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── WORKFLOW PANEL ── */
+<div class="panel" id="panel-workflow">
+  <div class="section-title">Content Production Workflow</div>
+  <div class="section-sub">One piece of content → repurposed across every platform. Here's the exact process from idea to scheduled post.</div>
+
+  <div class="workflow">
+    <div class="workflow-title">✍️ Step 1 — Write</div>
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Generate core content with Claude</div>
+        <div class="step-desc">Start every content piece in Claude. Write the long-form version first (blog post, LinkedIn article, email). This is your content bible for the week.</div>
+        <span class="step-tool">claude.ai</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Repurpose into platform-native formats</div>
+        <div class="step-desc">Ask Claude to break the long-form piece into a TikTok script, Instagram caption, Facebook post, LinkedIn summary, and email subject line — all from the same source.</div>
+        <span class="step-tool">claude.ai → 5 formats in one prompt</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="workflow-title">🎨 Step 2 — Visualize</div>
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Generate AI images for graphics</div>
+        <div class="step-desc">Use Adobe Firefly to generate background images, lifestyle shots, or abstract visuals. Prompt Claude first to write the ideal image prompt.</div>
+        <span class="step-tool">firefly.adobe.com</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Design in Canva</div>
+        <div class="step-desc">Drop Firefly images into Canva templates. Add your branding (navy + gold palette, Toastid Tech logo). Export for each platform size in one click.</div>
+        <span class="step-tool">canva.com → resize for all platforms</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="workflow-title">🎬 Step 3 — Film & Edit</div>
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Record with your phone</div>
+        <div class="step-desc">Use your phone camera in a well-lit spot. Film vertical (9:16). Use your Claude-generated script. One take or multiple — CapCut handles the cut.</div>
+        <span class="step-tool">iPhone/Android camera</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Edit in CapCut</div>
+        <div class="step-desc">Import footage → add auto-captions → layer music from Pixabay → add text overlays from your script → export at 1080p. Total edit time: 15–20 mins.</div>
+        <span class="step-tool">capcut.com + pixabay.com</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Add AI voiceover (optional)</div>
+        <div class="step-desc">If you don't want to record yourself, paste your script into ElevenLabs, download the MP3, and import it into CapCut as your audio track.</div>
+        <span class="step-tool">elevenlabs.io → capcut.com</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="workflow-title">📧 Step 4 — Email</div>
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Write email in Claude</div>
+        <div class="step-desc">Paste your content brief into Claude and ask for a subject line + email body optimized for open rates. Always ask for 3 subject line options.</div>
+        <span class="step-tool">claude.ai</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Send via Brevo</div>
+        <div class="step-desc">Paste Claude's copy into Brevo's drag-and-drop editor. Add your Toastid Tech branding. Schedule for Tuesday or Thursday 9am for best open rates.</div>
+        <span class="step-tool">brevo.com → 300 emails/day free</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="workflow-title">📅 Step 5 — Schedule Everything</div>
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">TikTok → TikTok Studio</div>
+        <div class="step-desc">Upload your edited video to TikTok Studio. Schedule up to 10 days ahead. Add Claude's caption + hashtags. Enable auto-share to Reels.</div>
+        <span class="step-tool">tiktok.com/studio</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Instagram + Facebook → Meta Business Suite</div>
+        <div class="step-desc">Schedule both platforms in one go. Post your Reel + caption to Instagram. Repurpose same video to Facebook with the Facebook-specific copy Claude wrote.</div>
+        <span class="step-tool">business.facebook.com</span>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">LinkedIn → LinkedIn Native Scheduler</div>
+        <div class="step-desc">Post your LinkedIn article or video directly via LinkedIn. Schedule up to 3 months out. Use Creator Mode for hashtag suggestions and audience analytics.</div>
+        <span class="step-tool">linkedin.com → Creator Mode</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CALENDAR PANEL ── -->
+<div class="panel" id="panel-calendar">
+  <div class="section-title">7-Day Content Calendar</div>
+  <div class="section-sub">Your weekly posting schedule for Toastid Tech. One content piece, repurposed across every platform.</div>
+
+  <div class="calendar-grid">
+    <div class="cal-header">MON</div>
+    <div class="cal-header">TUE</div>
+    <div class="cal-header">WED</div>
+    <div class="cal-header">THU</div>
+    <div class="cal-header">FRI</div>
+    <div class="cal-header">SAT</div>
+    <div class="cal-header">SUN</div>
+
+    <div class="cal-day">
+      <div class="cal-day-num">1</div>
+      <div class="cal-post tiktok">🎵 TikTok: App demo hook</div>
+      <div class="cal-post linkedin">💼 LinkedIn: Founder story</div>
+    </div>
+    <div class="cal-day">
+      <div class="cal-day-num">2</div>
+      <div class="cal-post email">📧 Email: Weekly tip</div>
+      <div class="cal-post instagram">📸 IG: Motivational quote graphic</div>
+    </div>
+    <div class="cal-day">
+      <div class="cal-day-num">3</div>
+      <div class="cal-post tiktok">🎵 TikTok: "Did you know?" fact</div>
+      <div class="cal-post facebook">👥 FB: Community question</div>
+    </div>
+    <div class="cal-day">
+      <div class="cal-day-num">4</div>
+      <div class="cal-post instagram">📸 IG Reel: App tutorial</div>
+      <div class="cal-post linkedin">💼 LinkedIn: AI insight post</div>
+    </div>
+    <div class="cal-day">
+      <div class="cal-day-num">5</div>
+      <div class="cal-post tiktok">🎵 TikTok: Behind the scenes</div>
+      <div class="cal-post facebook">👥 FB: Weekend promo post</div>
+    </div>
+    <div class="cal-day">
+      <div class="cal-day-num">6</div>
+      <div class="cal-post instagram">📸 IG: User benefit carousel</div>
+    </div>
+    <div class="cal-day">
+      <div class="cal-day-num">7</div>
+      <div class="cal-post tiktok">🎵 TikTok: Weekly recap/CTA</div>
+      <div class="cal-post email">📧 Email: Weekend newsletter</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:16px">Best Posting Times</div>
+  <div class="tools-grid" style="margin-top:16px">
+    <div class="tool-card">
+      <div class="tool-header"><div class="tool-icon">🎵</div><div><div class="tool-name">TikTok</div></div></div>
+      <div class="tool-desc">6–9am, 12–2pm, 7–9pm your local time. Post 3–5x per week minimum. Consistency beats virality.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><div class="tool-icon">📸</div><div><div class="tool-name">Instagram</div></div></div>
+      <div class="tool-desc">8–10am, 12pm, 7–9pm. Reels perform best Tuesday–Friday. Stories daily.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><div class="tool-icon">💼</div><div><div class="tool-name">LinkedIn</div></div></div>
+      <div class="tool-desc">Tuesday–Thursday 8–10am. Never post on weekends. 2–3x per week is the sweet spot.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><div class="tool-icon">📧</div><div><div class="tool-name">Email</div></div></div>
+      <div class="tool-desc">Tuesday or Thursday 9–11am. Never Monday (inbox chaos). Never Friday (everyone's checked out).</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROMPTS PANEL ── -->
+<div class="panel" id="panel-prompts">
+  <div class="section-title">Claude Prompt Library</div>
+  <div class="section-sub">Copy these prompts directly into Claude to generate content instantly. Each one is tuned for Toastid Tech's voice and products.</div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">🎵 TikTok Script</div>
+    <div class="prompt-text">"Write a 30-second TikTok script for Toastid Tech promoting the 28-Day Walking Tai Chi app. Hook in the first 2 seconds. Use fast cuts and on-screen text. Include voiceover, scene directions, and end with a strong CTA to the link in bio. Hype tone."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">📸 Instagram Caption</div>
+    <div class="prompt-text">"Write an Instagram caption for Toastid Tech's 28-Day Walking Tai Chi app. Inspirational tone. Include a hook first line, 3–4 sentences of value, a CTA to the link in bio, and 15 relevant hashtags. Keep it warm and community-driven."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">💼 LinkedIn Post</div>
+    <div class="prompt-text">"Write a LinkedIn post from Sean, founder of Toastid Tech LLC. Share the story of building the 28-Day Walking Tai Chi app as a solo founder using AI tools. Professional but personal tone. Include a lesson learned and a question to drive comments. 200–300 words."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">👥 Facebook Post</div>
+    <div class="prompt-text">"Write a Facebook post for Toastid Tech promoting the 28-Day Walking Tai Chi app. Friendly, conversational tone. Ask a question to drive engagement. Include the $9.99 price, what users get, and a link CTA. 100–150 words."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">📧 Email Campaign</div>
+    <div class="prompt-text">"Write a marketing email for the 28-Day Walking Tai Chi app by Toastid Tech. Give me 3 subject line options optimized for open rates. Body copy should be personal, value-driven, and end with a clear CTA button. From: Sean at Toastid Tech. Tone: warm and direct. 200 words max."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">🔄 Content Repurposer</div>
+    <div class="prompt-text">"Take this piece of content and repurpose it into 5 formats for Toastid Tech: 1) TikTok caption + hashtags, 2) Instagram caption + hashtags, 3) LinkedIn post, 4) Facebook post, 5) Email subject line. Keep each platform-native in tone. Here is the original content: [PASTE YOUR CONTENT HERE]"</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">🎨 Image Prompt Generator</div>
+    <div class="prompt-text">"Write an Adobe Firefly image generation prompt for a social media graphic promoting the 28-Day Walking Tai Chi app. The image should feel calm, modern, and tech-forward. Navy and gold color palette. No text in the image. Suitable for Instagram and TikTok thumbnail."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-platform">📅 Weekly Content Plan</div>
+    <div class="prompt-text">"Create a 7-day social media content calendar for Toastid Tech and the 28-Day Walking Tai Chi app. Cover TikTok (3x), Instagram (2x), Facebook (2x), LinkedIn (2x), and Email (1x). Include post topic, format, tone, and best posting time for each. Make content varied — not all promotional."</div>
+    <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+  </div>
+
+</div>
+
+<!-- ── SAVINGS PANEL ── -->
+<div class="panel" id="panel-savings">
+  <div class="section-title">Money Saved vs. Paid Stack</div>
+  <div class="section-sub">What you would be paying if you used traditional paid tools vs. the Toastid Tech free AI stack.</div>
+
+  <div class="savings-total">
+    <div class="savings-amount">$847</div>
+    <div class="savings-label">Saved every single month · $10,164/year</div>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Paid Tool</th>
+        <th>Free Alternative</th>
+        <th>Monthly Saving</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AI Writing</td>
+        <td><span class="paid-tool">Jasper AI — $49/mo</span></td>
+        <td><span class="free-tool">Claude.ai Free</span></td>
+        <td><span class="save-amt">$49</span></td>
+      </tr>
+      <tr>
+        <td>Graphic Design</td>
+        <td><span class="paid-tool">Canva Pro — $13/mo</span></td>
+        <td><span class="free-tool">Canva Free + Firefly</span></td>
+        <td><span class="save-amt">$13</span></td>
+      </tr>
+      <tr>
+        <td>AI Image Gen</td>
+        <td><span class="paid-tool">Midjourney — $10/mo</span></td>
+        <td><span class="free-tool">Adobe Firefly Free</span></td>
+        <td><span class="save-amt">$10</span></td>
+      </tr>
+      <tr>
+        <td>Video Editing</td>
+        <td><span class="paid-tool">Adobe Premiere — $55/mo</span></td>
+        <td><span class="free-tool">CapCut Free</span></td>
+        <td><span class="save-amt">$55</span></td>
+      </tr>
+      <tr>
+        <td>AI Voiceover</td>
+        <td><span class="paid-tool">Murf.ai — $29/mo</span></td>
+        <td><span class="free-tool">ElevenLabs Free</span></td>
+        <td><span class="save-amt">$29</span></td>
+      </tr>
+      <tr>
+        <td>Music / SFX</td>
+        <td><span class="paid-tool">Epidemic Sound — $16/mo</span></td>
+        <td><span class="free-tool">Pixabay + Zapsplat</span></td>
+        <td><span class="save-amt">$16</span></td>
+      </tr>
+      <tr>
+        <td>Email Marketing</td>
+        <td><span class="paid-tool">Mailchimp — $20/mo</span></td>
+        <td><span class="free-tool">Brevo Free (300/day)</span></td>
+        <td><span class="save-amt">$20</span></td>
+      </tr>
+      <tr>
+        <td>Social Scheduling</td>
+        <td><span class="paid-tool">Buffer Pro — $15/mo</span></td>
+        <td><span class="free-tool">Meta Suite + TikTok Studio</span></td>
+        <td><span class="save-amt">$15</span></td>
+      </tr>
+      <tr>
+        <td>LinkedIn Tools</td>
+        <td><span class="paid-tool">Taplio — $49/mo</span></td>
+        <td><span class="free-tool">LinkedIn Native Scheduler</span></td>
+        <td><span class="save-amt">$49</span></td>
+      </tr>
+      <tr>
+        <td>SEO / Analytics</td>
+        <td><span class="paid-tool">SEMrush — $99/mo</span></td>
+        <td><span class="free-tool">Google Analytics + Search Console</span></td>
+        <td><span class="save-amt">$99</span></td>
+      </tr>
+      <tr>
+        <td>Stock Content</td>
+        <td><span class="paid-tool">Shutterstock — $29/mo</span></td>
+        <td><span class="free-tool">Pexels + Unsplash + Pixabay</span></td>
+        <td><span class="save-amt">$29</span></td>
+      </tr>
+      <tr>
+        <td>Transactional Email</td>
+        <td><span class="paid-tool">SendGrid — $15/mo</span></td>
+        <td><span class="free-tool">EmailJS Free (200/mo)</span></td>
+        <td><span class="save-amt">$15</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="savings-total">
+    <div class="savings-amount" style="font-size:2rem; color: var(--gold)">$10,164</div>
+    <div class="savings-label">Saved per year · Zero paid subscriptions · Full content stack</div>
+  </div>
+</div>
+
+<script>
+
+  // ── Splash Screen ──
+  (function() {
+    // Generate stars
+    const container = document.getElementById('splashStars');
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        animation-duration: ${Math.random() * 3 + 2}s;
+        animation-delay: ${Math.random() * 3}s;
+      `;
+      container.appendChild(s);
+    }
+
+    // Hide splash after load bar completes
+    setTimeout(() => {
+      const splash = document.getElementById('splash-screen');
+      splash.classList.add('hide');
+      setTimeout(() => splash.remove(), 600);
+    }, 3400);
+  })();
+
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function copyPrompt(btn) {
+    const text = btn.previousElementSibling.textContent;
+    navigator.clipboard.writeText(text);
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }
+</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/toastid-content-os/sw.js')
+          .then(() => console.log('SW registered'))
+          .catch(err => console.log('SW failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
